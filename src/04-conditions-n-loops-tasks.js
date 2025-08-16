@@ -123,8 +123,22 @@ function isTriangle(a, b, c) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *
  */
-function doRectanglesOverlap(/* rect1, rect2 */) {
-  throw new Error('Not implemented');
+function doRectanglesOverlap(rect1, rect2) {
+  const topRight1 = rect1.left + rect1.width;
+  const bottomLeft1 = rect1.top + rect1.height;
+  const topRight2 = rect2.left + rect2.width;
+  const bottomLeft2 = rect2.top + rect2.height;
+
+  function isInRange(value, min, max) {
+    return value >= min && value <= max;
+  }
+
+  return (
+    (isInRange(topRight1, rect2.left, topRight2) ||
+      isInRange(topRight2, rect1.left, topRight1)) &&
+    (isInRange(bottomLeft1, rect2.top, bottomLeft2) ||
+      isInRange(bottomLeft2, rect1.top, bottomLeft1))
+  );
 }
 
 /**
@@ -153,8 +167,12 @@ function doRectanglesOverlap(/* rect1, rect2 */) {
  *   { center: { x:0, y:0 }, radius:10 },  { x:10, y:10 }   => false
  *
  */
-function isInsideCircle(/* circle, point */) {
-  throw new Error('Not implemented');
+function isInsideCircle(circle, point) {
+  return (
+    Math.sqrt(
+      (point.x - circle.center.x) ** 2 + (point.y - circle.center.y) ** 2
+    ) < circle.radius
+  );
 }
 
 /**
@@ -168,8 +186,14 @@ function isInsideCircle(/* circle, point */) {
  *   'abracadabra'  => 'c'
  *   'entente' => null
  */
-function findFirstSingleChar(/* str */) {
-  throw new Error('Not implemented');
+function findFirstSingleChar(str) {
+  for (let i = 0; i < str.length; i += 1) {
+    const char = str[i];
+    if (str.indexOf(char) === str.lastIndexOf(char)) {
+      return char;
+    }
+  }
+  return null;
 }
 
 /**
@@ -256,8 +280,22 @@ function reverseInteger(num) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+function isCreditCardNumber(ccn) {
+  const nums = String(ccn).split('').map(Number);
+  const { length } = nums;
+
+  let sum = 0;
+  const parity = length % 2;
+  for (let i = 0; i < length - 1; i += 1) {
+    if ((i + 1) % 2 === parity) {
+      sum += nums[i];
+    } else if (nums[i] > 4) {
+      sum += 2 * nums[i] - 9;
+    } else {
+      sum += 2 * nums[i];
+    }
+  }
+  return nums[length - 1] === (10 - (sum % 10)) % 10;
 }
 
 /**
@@ -300,8 +338,22 @@ function getDigitalRoot(num) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  const brackets = {
+    '(': ')',
+    '[': ']',
+    '{': '}',
+    '<': '>',
+  };
+  const stack = [];
+  for (let i = 0; i < str.length; i += 1) {
+    if (brackets[str[i]]) {
+      stack.push(brackets[str[i]]);
+    } else if (stack.pop() !== str[i]) {
+      return false;
+    }
+  }
+  return stack.length === 0;
 }
 
 /**
@@ -381,8 +433,20 @@ function getCommonDirectoryPath(pathes) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const result = [];
+  for (let i = 0; i < m1.length; i += 1) {
+    const row = [];
+    for (let j = 0; j < m2[0].length; j += 1) {
+      let sum = 0;
+      for (let k = 0; k < m2.length; k += 1) {
+        sum += m1[i][k] * m2[k][j];
+      }
+      row.push(sum);
+    }
+    result.push(row);
+  }
+  return result;
 }
 
 /**
@@ -415,8 +479,56 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  const winCombos = [
+    [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+    ],
+    [
+      [1, 0],
+      [1, 1],
+      [1, 2],
+    ],
+    [
+      [2, 0],
+      [2, 1],
+      [2, 2],
+    ],
+    [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+    ],
+    [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+    ],
+    [
+      [0, 2],
+      [1, 2],
+      [2, 2],
+    ],
+    [
+      [0, 0],
+      [1, 1],
+      [2, 2],
+    ],
+    [
+      [0, 2],
+      [1, 1],
+      [2, 0],
+    ],
+  ];
+  const winner = winCombos.find(
+    ([[i1, j1], [i2, j2], [i3, j3]]) =>
+      position[i1][j1] &&
+      position[i1][j1] === position[i2][j2] &&
+      position[i1][j1] === position[i3][j3]
+  );
+  return winner ? position[winner[0][0]][winner[0][1]] : undefined;
 }
 
 module.exports = {
